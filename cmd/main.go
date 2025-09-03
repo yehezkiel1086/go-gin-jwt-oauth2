@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/yehezkiel1086/go-gin-jwt-oauth2/internal/adapter/config"
+	"github.com/yehezkiel1086/go-gin-jwt-oauth2/internal/adapter/storage/postgres"
 )
 
 func main() {
@@ -13,9 +15,18 @@ func main() {
 		panic(err)
 	}
 
-	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable TimeZone=Asia/Jakarta", conf.DB.Host, conf.DB.User, conf.DB.Password, conf.DB.Name, conf.DB.Port)
-
-	fmt.Println(dsn)
-
 	// connect db
+	ctx := context.Background()
+	db, err := postgres.ConnectDB(ctx, conf.DB)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Connected to db.")
+
+	// migrate db
+	if err := db.Migrate(); err != nil {
+		panic(err)
+	}
+	fmt.Println("Migration success.")
 }
