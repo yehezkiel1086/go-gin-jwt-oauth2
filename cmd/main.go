@@ -5,7 +5,10 @@ import (
 	"fmt"
 
 	"github.com/yehezkiel1086/go-gin-jwt-oauth2/internal/adapter/config"
+	"github.com/yehezkiel1086/go-gin-jwt-oauth2/internal/adapter/handler"
 	"github.com/yehezkiel1086/go-gin-jwt-oauth2/internal/adapter/storage/postgres"
+	"github.com/yehezkiel1086/go-gin-jwt-oauth2/internal/adapter/storage/postgres/repository"
+	"github.com/yehezkiel1086/go-gin-jwt-oauth2/internal/core/service"
 )
 
 func main() {
@@ -21,7 +24,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 	fmt.Println("Connected to db.")
 
 	// migrate db
@@ -29,4 +31,16 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Migration success.")
+
+	// dependency injection
+	userRepository := repository.InitUserRepository(db)
+	userService := service.InitUserService(userRepository)
+	userHandler := handler.InitUserHandler(userService)
+
+	// routing
+	r := handler.InitRouter(*userHandler)
+
+	// get address and serve
+	addr := fmt.Sprintf("%v:%v", conf.HTTP.Host, conf.HTTP.Port)
+	r.Serve(addr)
 }
