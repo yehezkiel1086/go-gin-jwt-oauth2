@@ -31,10 +31,6 @@ func (svc *AuthService) Login(ctx context.Context, user *domain.User) (*domain.U
 	if err := util.ComparePassword(user.Password, inputPwd); err != nil {
 		return &domain.User{}, err
 	}
-
-	// generate jwt
-
-	// set jwt to cookie
 	
 	return user, nil
 }
