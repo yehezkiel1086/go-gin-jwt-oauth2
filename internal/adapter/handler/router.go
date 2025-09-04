@@ -12,12 +12,14 @@ type Router struct {
 
 func InitRouter(
 	uh UserHandler,
+	ah AuthHandler,
 ) *Router {
 	r := gin.New()
 
 	// public routes
 	v1 := r.Group("/api/v1") 
 	v1.POST("/register", uh.Register)
+	v1.POST("/login", ah.Login)
 
 	return &Router{r}
 }

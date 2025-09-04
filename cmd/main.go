@@ -33,12 +33,17 @@ func main() {
 	fmt.Println("Migration success.")
 
 	// dependency injection
+	// user
 	userRepository := repository.InitUserRepository(db)
 	userService := service.InitUserService(userRepository)
 	userHandler := handler.InitUserHandler(userService)
 
+	// auth
+	authService := service.InitAuthService(userRepository)
+	authHandler := handler.InitAuthHandler(authService)
+
 	// routing
-	r := handler.InitRouter(*userHandler)
+	r := handler.InitRouter(*userHandler, *authHandler)
 
 	// get address and serve
 	addr := fmt.Sprintf("%v:%v", conf.HTTP.Host, conf.HTTP.Port)
