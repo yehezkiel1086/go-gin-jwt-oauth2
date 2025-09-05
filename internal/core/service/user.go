@@ -33,3 +33,21 @@ func (us *UserService) Register(ctx context.Context, user *domain.User) (*domain
 
 	return user, nil
 }
+
+func (us *UserService) GetUserByUsername(ctx context.Context, user *domain.User) (*domain.User, error) {
+	user, err := us.repo.GetUserByUsername(ctx, user.Username)
+	if err != nil {
+		return &domain.User{}, err
+	}
+
+	return user, nil
+}
+
+func (us *UserService) GetAllUsers(ctx context.Context) ([]domain.User, error) {
+	user, err := us.repo.GetAllUsers(ctx)
+	if err != nil {
+		return []domain.User{}, err
+	}
+
+	return user, nil
+}

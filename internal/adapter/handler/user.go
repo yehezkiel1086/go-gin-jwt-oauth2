@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/yehezkiel1086/go-gin-jwt-oauth2/internal/core/domain"
 	"github.com/yehezkiel1086/go-gin-jwt-oauth2/internal/core/port"
+	"github.com/yehezkiel1086/go-gin-jwt-oauth2/internal/core/util"
 )
 
 type UserHandler struct {
@@ -56,4 +57,51 @@ func (uh *UserHandler) Register(c *gin.Context) {
 
 	// create user success
 	handleResponse(c, http.StatusCreated, "Registration success.")
+}
+
+type GetUserByUsernameResponse struct {
+	ID        uint `json:"id"`
+	Username string `json:"username"`
+	Fullname string `json:"fullname"`
+	Email    string `json:"email"`
+	Role domain.Role `json:"role"`
+}
+
+func (uh *UserHandler) GetUserByUsername(c *gin.Context) {
+	// get username param
+	username := c.Param("username")
+	if username == "" {
+		util.ResponseHandler(c, http.StatusBadRequest, true, "Username parameter is required.")
+		return
+	}
+
+	// get user by username
+	user, err := uh.svc.GetUserByUsername(c, &domain.User{
+		Username: username,
+	})
+	if err != nil {
+		util.ResponseHandler(c, http.StatusBadRequest, true, err.Error())
+		return
+	}
+
+	// response
+	c.JSON(http.StatusOK, &GetUserByUsernameResponse{
+		ID: user.ID,
+		Username: user.Username,
+		Fullname: user.Fullname,
+		Email: user.Email,
+		Role: user.Role,
+	})
+}
+
+func (uh *UserHandler) GetAllUsers(c *gin.Context) {
+	// get all users
+	users, err := uh.svc.GetAllUsers(c)
+	if err != nil {
+		util.ResponseHandler(c, http.StatusBadRequest, true, err.Error())
+		return
+	}
+
+	// response
+	c.JSON(http.StatusOK, users)
 }

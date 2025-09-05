@@ -37,3 +37,15 @@ func (ur *UserRepository) GetUserByUsername(ctx context.Context, username string
 
 	return user, nil
 }
+
+func (ur *UserRepository) GetAllUsers(ctx context.Context) ([]domain.User, error) {
+	var users []domain.User
+
+	db := ur.db.GetDB()
+
+	if err := db.WithContext(ctx).Find(&users).Error; err != nil {
+		return []domain.User{}, err
+	}
+
+	return users, nil
+}
