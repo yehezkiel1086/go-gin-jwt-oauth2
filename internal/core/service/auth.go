@@ -18,17 +18,17 @@ func InitAuthService(userRepo port.UserRepository) *AuthService {
 	}
 }
 
-func (as *AuthService) Login(ctx context.Context, input *domain.User) error {
+func (as *AuthService) Login(ctx context.Context, input *domain.User) (*domain.User, error) {
 	// get user by email (check email)
 	user, err := as.userRepo.GetUserByEmail(ctx, input.Email)
 	if err != nil {
-		return err
+		return &domain.User{}, err
 	}
 
 	// compare input and user password
 	if err := util.ComparePassword(user.Password, input.Password); err != nil {
-		return err
+		return &domain.User{}, err
 	}
 
-	return nil
+	return user, nil
 }

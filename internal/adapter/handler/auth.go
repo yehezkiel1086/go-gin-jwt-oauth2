@@ -40,10 +40,11 @@ func (ah *AuthHandler) Login(c *gin.Context) {
 	}
 
 	// login
-	if err := ah.svc.Login(c, &domain.User{
+	user, err := ah.svc.Login(c, &domain.User{
 		Email: input.Email,
 		Password: input.Password,
-	}); err != nil {
+	})
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "invalid credentials",
 		})
@@ -62,7 +63,8 @@ func (ah *AuthHandler) Login(c *gin.Context) {
 
 	// Create claims with multiple fields populated
 	claims := domain.JWT{
-		Email: input.Email,
+		Email: user.Email,
+		Role: user.Role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(duration) * time.Minute)),
 		},

@@ -15,15 +15,15 @@ services:
     - '${DB_HOST}:${DB_PORT}:5432'
     container_name: postgres
 
-  pgadmin4:
-    image: elestio/pgadmin:latest
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${ADMIN_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${ADMIN_PASS}
-      PGADMIN_LISTEN_PORT: 8080
-    ports:
-    - "${DB_HOST}:8080:8080"
-    volumes:
-    - ./servers.json:/pgadmin4/servers.json
-    container_name: pgadmin
+  # pgadmin4:
+  #   image: elestio/pgadmin:latest
+  #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: ${ADMIN_EMAIL}
+  #     PGADMIN_DEFAULT_PASSWORD: ${ADMIN_PASS}
+  #     PGADMIN_LISTEN_PORT: 8080
+  #   ports:
+  #   - "${DB_HOST}:8080:8080"
+  #   volumes:
+  #   - ./servers.json:/pgadmin4/servers.json
+  #   container_name: pgadmin
