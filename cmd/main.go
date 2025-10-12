@@ -48,7 +48,12 @@ func main() {
 	empHandler := handler.InitEmployeeHandler(empSvc)
 
 	// routing
-	r := handler.InitRouter(*userHandler, *authHandler, *empHandler)
+	r := handler.InitRouter(
+		conf.App,
+		*userHandler,
+		*authHandler,
+		*empHandler,
+	)
 
 	// run server
 	if err := r.Start(conf.HTTP); err != nil {

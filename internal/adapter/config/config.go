@@ -18,6 +18,7 @@ type (
 	App struct {
 		Name string
 		Env  string
+		AllowedOrigins string
 	}
 
 	HTTP struct {
@@ -50,6 +51,7 @@ func InitConfig() (*Container, error) {
 	App := &App{
 		Name: os.Getenv("APP_NAME"),
 		Env: os.Getenv("APP_ENV"),
+		AllowedOrigins: os.Getenv("ALLOWED_ORIGINS"),
 	}
 
 	HTTP := &HTTP{
