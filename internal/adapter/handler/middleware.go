@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -78,8 +77,6 @@ func RoleMiddleware(requiredRoles ...domain.Role) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
-		fmt.Println(requiredRoles, claims)
 
 		authorized := false
 		for _, role := range requiredRoles {
