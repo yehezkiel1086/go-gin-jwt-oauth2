@@ -15,26 +15,35 @@ const RegisterPage = () => {
     setError("");
     setLoading(true);
 
-    if (!email || !password) {
-      setError("Email and password are required.");
+    const c1 = email;
+    const c2 = password;
+    const c3 = passConf == password;
+
+    if (!c1 || !c2 || !c3) {
+      setError(
+        "Email and password are required. Password confirmation must match password."
+      );
       setLoading(false);
       return;
     }
 
     try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URI}/api/v1/register`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+          credentials: "include",
+        }
+      );
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || "Login failed");
+        setError(data.error || "Registration failed");
       } else {
         // Redirect or reload on success
-        window.location.href = "/dashboard";
+        window.location.href = "/employees";
       }
     } catch (err) {
       setError("Network error");
@@ -73,7 +82,6 @@ const RegisterPage = () => {
           className="border-1 rounded-sm px-2 py-1"
           value={passConf}
           onChange={(e) => setPassConf(e.target.value)}
-          disabled
         />
         <div className="flex flex-col gap-2">
           <button
