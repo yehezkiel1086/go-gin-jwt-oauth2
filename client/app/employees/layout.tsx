@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Footer from "@/app/components/Footer";
 
 const EmployeesLayout = ({
   children,
@@ -10,10 +10,10 @@ const EmployeesLayout = ({
       {/* inner container */}
       <div className="w-96">
         {children}
-        <Link href="/logout" className="text-blue-600 hover:text-red-600 mt-4 text-right block">Logout</Link>
+        <Footer />
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default EmployeesLayout;

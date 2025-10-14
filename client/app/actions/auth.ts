@@ -106,3 +106,27 @@ export async function signin(state: FormState, formData: FormData) {
     };
   }
 }
+
+export async function logout() {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URI}/api/v1/logout`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
+
+    if (!res.ok) {
+      const data = await res.json();
+      console.error("Logout failed:", data);
+      return { error: data.message || "Logout failed" };
+    }
+
+    // redirect to login page or homepage
+    window.location.href = "/login";
+    return {};
+  } catch (err) {
+    return { error: "Network error" };
+  }
+}
