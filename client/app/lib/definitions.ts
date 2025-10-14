@@ -22,6 +22,12 @@ export const SignupFormSchema = z
     message: "Password confirmation must match password.",
     path: ["pass_conf"],
   });
+
+// --- Add this for signin ---
+export const SigninFormSchema = z.object({
+  email: z.string().email({ message: 'Please enter a valid email.' }).trim(),
+  password: z.string().min(8, { message: 'At least 8 characters password is required.' }).trim(),
+});
  
 export type FormState =
   | {

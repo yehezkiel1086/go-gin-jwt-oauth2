@@ -1,53 +1,21 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useActionState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import { signin } from "@/app/actions/auth";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    if (!email || !password) {
-      setError("Email and password are required.");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/api/v1/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || "Login failed");
-      } else {
-        // Redirect or reload on success
-        window.location.href = "/employees";
-      }
-    } catch (err) {
-      setError("Network error");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [state, action, pending] = useActionState(signin, undefined);
 
   return (
     <>
       <h1 className="text-2xl font-semibold">Login</h1>
-      <form className="flex flex-col gap-4 mt-4" onSubmit={handleSubmit}>
+      <form className="flex flex-col gap-4 mt-4" action={action}>
         <input
-          type="text"
+          type="email"
           name="email"
           id="email"
           placeholder="Enter your email here"
@@ -55,6 +23,10 @@ const LoginPage = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+        {state?.errors?.email && (
+          <p className="text-red-500">{state.errors.email}</p>
+        )}
+
         <input
           type="password"
           name="password"
@@ -64,20 +36,24 @@ const LoginPage = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        {state?.errors?.password && (
+          <p className="text-red-500">{state.errors.password}</p>
+        )}
+
         <div className="flex flex-col gap-2">
           <button
             className="bg-blue-600 rounded-sm py-1 hover:bg-blue-500 transition duration-200"
             type="submit"
-            disabled={loading}
+            disabled={pending}
           >
-            {loading ? "Signing in..." : "Signin"}
+            {pending ? "Signing in..." : "Signin"}
           </button>
           <button className="border-blue-600 border-2 rounded-sm py-1 hover:bg-white hover:text-black transition duration-200">
             <FcGoogle className="inline-block text-lg mb-[3px]" /> Signin with
             Google
           </button>
         </div>
-        {error && <div className="text-red-600">{error}</div>}
+        {/* {error && <div className="text-red-600">{error}</div>} */}
       </form>
       <p className="mt-4">
         Don&apos;t have an account?{" "}
