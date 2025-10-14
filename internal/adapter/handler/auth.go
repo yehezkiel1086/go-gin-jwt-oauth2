@@ -80,7 +80,7 @@ func (ah *AuthHandler) Login(c *gin.Context) {
 	}
 
 	// set cookie
-	c.SetCookie("jwt_token", ss, duration * 60, "/", "", false, true)
+	c.SetCookie("jwt_token", ss, duration * 60, "/", "127.0.0.1", false, true)
 
 	// return ok response
 	c.JSON(http.StatusOK, gin.H{
