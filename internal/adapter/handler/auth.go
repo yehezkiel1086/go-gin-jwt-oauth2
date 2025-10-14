@@ -88,3 +88,10 @@ func (ah *AuthHandler) Login(c *gin.Context) {
 		"token": ss,
 	})
 }
+
+func (ah *AuthHandler) Logout(c *gin.Context) {
+	c.SetCookie("jwt_token", "", -1, "/", "127.0.0.1", false, true)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "logged out successfully",
+	})
+}

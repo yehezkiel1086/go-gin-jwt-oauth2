@@ -40,6 +40,9 @@ func InitRouter(
 	pb.POST("/register", userHandler.Register)
 	pb.POST("/login", authHandler.Login)
 
+	// user
+	us.POST("/logout", authHandler.Logout)
+
 	// employee routes
 	// user
 	us.GET("/employees", empHandler.GetEmployees)
