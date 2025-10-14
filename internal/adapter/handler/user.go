@@ -19,6 +19,7 @@ func InitUserHandler(svc port.UserService) *UserHandler {
 }
 
 type RegisterReq struct {
+	Name string `json:"name" binding:"required"`
 	Email string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
@@ -28,13 +29,14 @@ func (uh *UserHandler) Register(c *gin.Context) {
 	var input *RegisterReq
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "email and password are required",
+			"error": "name, email and password are required",
 		})
 		return
 	}
 
 	// register
 	if _, err := uh.svc.Register(c, &domain.User{
+		Name: input.Name,
 		Email: input.Email,
 		Password: input.Password,
 	}); err != nil {
