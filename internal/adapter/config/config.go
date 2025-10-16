@@ -18,12 +18,12 @@ type (
 	App struct {
 		Name string
 		Env  string
-		AllowedOrigins string
 	}
 
 	HTTP struct {
 		Host string
 		Port string
+		AllowedOrigins string
 	}
 
 	DB struct {
@@ -51,12 +51,12 @@ func InitConfig() (*Container, error) {
 	App := &App{
 		Name: os.Getenv("APP_NAME"),
 		Env: os.Getenv("APP_ENV"),
-		AllowedOrigins: os.Getenv("ALLOWED_ORIGINS"),
 	}
 
 	HTTP := &HTTP{
 		Host: os.Getenv("HTTP_HOST"),
 		Port: os.Getenv("HTTP_PORT"),
+		AllowedOrigins: os.Getenv("HTTP_ALLOWED_ORIGINS"),
 	}
 
 	DB := &DB{
