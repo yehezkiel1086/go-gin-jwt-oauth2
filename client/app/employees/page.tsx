@@ -1,23 +1,31 @@
-import Link from "next/link"
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const EmployeesPage = () => {
-  const employees = [
-    {
-      "id": 1,
-      "name": "Dimitry Kravchenko",
-      "position": "Soviet Army",
-    },
-    {
-      "id": 2,
-      "name": "Imran Zhakaev",
-      "position": "Russian Ultranationalist",
-    },
-    {
-      "id": 3,
-      "name": "John MacTavish",
-      "position": "SAS",
-    }
-  ]
+  const [employees, setEmployees] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const getEmployees = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URI}/api/v1/employees`,
+          {
+            credentials: "include",
+          }
+        );
+        const data = await res.json();
+        setEmployees(data);
+      } catch (err) {
+        console.error("Failed to load employees:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getEmployees();
+  }, []);
 
   return (
     <div>
@@ -28,25 +36,28 @@ const EmployeesPage = () => {
       >
         Add new employee
       </Link>
-      {/* employees listing */}
+
       <div className="mt-4 flex flex-col gap-4">
-        {employees.map(
-          (emp, i) =>
-            i < 10 && (
-              <div key={emp.id}>
-                <Link
-                  href={`/employees/${emp.id}`}
-                  className="text-lg text-blue-600 hover:text-red-600"
-                >
-                  {emp.name}
-                </Link>
-                <p>Position: {emp.position}</p>
-              </div>
-            )
+        {loading ? (
+          <p>Loading employees...</p>
+        ) : employees.length === 0 ? (
+          <p>No employees found.</p>
+        ) : (
+          employees.map((emp, i) => (
+            <div key={i}>
+              <Link
+                href={`/employees/${emp.id}`}
+                className="text-lg text-blue-600 hover:text-red-600"
+              >
+                {emp.name}
+              </Link>
+              <p>Position: {emp.position}</p>
+            </div>
+          ))
         )}
       </div>
     </div>
   );
-}
+};
 
-export default EmployeesPage
+export default EmployeesPage;
