@@ -11,11 +11,12 @@ import (
 )
 
 type Router struct {
-	*gin.Engine
+	r *gin.Engine
+	conf *config.HTTP
 }
 
 func InitRouter(
-	conf *config.App,
+	conf *config.HTTP,
 	userHandler UserHandler,
 	authHandler AuthHandler,
 	empHandler EmployeeHandler,
@@ -50,12 +51,12 @@ func InitRouter(
 	// admin
 	ad.POST("/employees", empHandler.CreateEmployee)
 
-	return &Router{r}
+	return &Router{r: r, conf: conf}
 }
 
-func (r *Router) Start(conf *config.HTTP) error {
-	uri := fmt.Sprintf("%v:%v", conf.Host, conf.Port)
-	if err := r.Run(uri); err != nil {
+func (r *Router) Start() error {
+	uri := fmt.Sprintf("%v:%v", r.conf.Host, r.conf.Port)
+	if err := r.r.Run(uri); err != nil {
 		return err
 	}
 

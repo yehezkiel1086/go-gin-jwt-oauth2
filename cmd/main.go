@@ -41,7 +41,7 @@ func main() {
 	userHandler := handler.InitUserHandler(userSvc)
 
 	authSvc := service.InitAuthService(userRepo)
-	authHandler := handler.InitAuthHandler(authSvc, conf.JWT)
+	authHandler := handler.InitAuthHandler(authSvc, conf.JWT, conf.HTTP)
 
 	empRepo := repository.InitEmployeeRepository(db)
 	empSvc := service.InitEmployeeService(empRepo)
@@ -49,14 +49,15 @@ func main() {
 
 	// routing
 	r := handler.InitRouter(
-		conf.App,
+		conf.HTTP,
 		*userHandler,
 		*authHandler,
 		*empHandler,
 	)
+	fmt.Println("✅ routes initialized successfully")
 
 	// run server
-	if err := r.Start(conf.HTTP); err != nil {
+	if err := r.Start(); err != nil {
 		panic(err)
 	}
 }

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -14,13 +15,15 @@ import (
 
 type AuthHandler struct {
 	svc port.AuthService
-	conf *config.JWT
+	jwtConf *config.JWT
+	httpConf *config.HTTP
 }
 
-func InitAuthHandler(svc port.AuthService, conf *config.JWT) *AuthHandler {
+func InitAuthHandler(svc port.AuthService, jwtConf *config.JWT, httpConf *config.HTTP) *AuthHandler {
 	return &AuthHandler{
 		svc: svc,
-		conf: conf,
+		jwtConf: jwtConf,
+		httpConf: httpConf,
 	}
 }
 
@@ -53,7 +56,7 @@ func (ah *AuthHandler) Login(c *gin.Context) {
 
 	// handle jwt
 	// convert token duration to int
-	duration, err := strconv.Atoi(ah.conf.Duration)
+	duration, err := strconv.Atoi(ah.jwtConf.Duration)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "invalid token duration from .env",
@@ -71,7 +74,7 @@ func (ah *AuthHandler) Login(c *gin.Context) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	ss, err := token.SignedString([]byte(ah.conf.Secret))
+	ss, err := token.SignedString([]byte(ah.jwtConf.Secret))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
@@ -80,17 +83,19 @@ func (ah *AuthHandler) Login(c *gin.Context) {
 	}
 
 	// set cookie
-	c.SetCookie("jwt_token", ss, duration * 60, "/", "127.0.0.1", false, true)
+	c.SetCookie("jwt_token", ss, duration * 60, "/", ah.httpConf.Host, os.Getenv("APP_ENV") == "production", true)
 
 	// return ok response
 	c.JSON(http.StatusOK, gin.H{
 		"message": "user logged in successfully",
-		"token": ss,
 	})
 }
 
 func (ah *AuthHandler) Logout(c *gin.Context) {
-	c.SetCookie("jwt_token", "", -1, "/", "127.0.0.1", false, true)
+	// remove jwt_token cookie
+	c.SetCookie("jwt_token", "", -1, "/", ah.httpConf.Host, os.Getenv("APP_ENV") == "production", true)
+
+	// return http response
 	c.JSON(http.StatusOK, gin.H{
 		"message": "logged out successfully",
 	})
