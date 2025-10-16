@@ -57,15 +57,15 @@ const RegisterPage = () => {
 
         <input
           type="password"
-          name="pass_conf"
-          id="pass_conf"
+          name="password_confirmation"
+          id="password_confirmation"
           placeholder="Re-enter your password here"
           className="border-1 rounded-sm px-2 py-1"
           value={passConf}
           onChange={(e) => setPassConf(e.target.value)}
         />
-        {state?.errors?.pass_conf && (
-          <p className="text-red-500">{state.errors.pass_conf}</p>
+        {state?.errors?.password_confirmation && (
+          <p className="text-red-500">{state.errors.password_confirmation}</p>
         )}
 
         <div className="flex flex-col gap-2">

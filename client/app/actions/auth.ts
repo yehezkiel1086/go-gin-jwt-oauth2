@@ -10,7 +10,7 @@ export async function signup(state: FormState, formData: FormData) {
     name: formData.get("name"),
     email: formData.get("email"),
     password: formData.get("password"),
-    pass_conf: formData.get("pass_conf"),
+    password_confirmation: formData.get("password_confirmation"),
   });
 
   // If any form fields are invalid, return early
@@ -43,7 +43,9 @@ export async function signup(state: FormState, formData: FormData) {
           name: data.error?.name ? [data.error.name] : undefined,
           email: data.error?.email ? [data.error.email] : undefined,
           password: data.error?.password ? [data.error.password] : undefined,
-          pass_conf: data.error?.pass_conf ? [data.error.pass_conf] : undefined,
+          password_confirmation: data.error?.password_confirmation
+            ? [data.error.password_confirmation]
+            : undefined,
         },
       };
     } else {
@@ -54,7 +56,7 @@ export async function signup(state: FormState, formData: FormData) {
   } catch (err) {
     return {
       errors: {
-        pass_conf: ["Network error"],
+        password_confirmation: ["Network error"],
       },
     };
   }
