@@ -32,6 +32,24 @@ export const SigninFormSchema = z.object({
     .trim(),
 });
 
+// --- Employee Schema ---
+export const EmployeeFormSchema = z.object({
+  name: z
+    .string()
+    .min(2, { message: "Must be at least 2 characters." })
+    .max(255, { message: "Name is too long." })
+    .trim(),
+  position: z
+    .string()
+    .min(2, { message: "Must be at least 2 characters." })
+    .max(255, { message: "Position is too long." })
+    .trim(),
+  description: z
+    .string()
+    .max(255, { message: "Description is too long." })
+    .optional()
+});
+
 export type FormState =
   | {
       errors?: {
@@ -39,6 +57,8 @@ export type FormState =
         email?: string[];
         password?: string[];
         password_confirmation?: string[];
+        position?: string[];
+        description?: string[];
       };
       message?: string;
     }
