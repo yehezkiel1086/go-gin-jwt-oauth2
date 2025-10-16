@@ -21,6 +21,7 @@ func InitEmployeeHandler(svc port.EmployeeService) *EmployeeHandler {
 type CreateEmployeeReq struct {
 	Name string `json:"name" binding:"required"`
 	Position string `json:"position" binding:"required"`
+	Description string `json:"description"`
 }
 
 func (eh *EmployeeHandler) CreateEmployee(c *gin.Context) {
@@ -37,6 +38,7 @@ func (eh *EmployeeHandler) CreateEmployee(c *gin.Context) {
 	res, err := eh.svc.CreateEmployee(c, &domain.Employee{
 		Name: input.Name,		
 		Position: input.Position,
+		Description: input.Description,
 	})
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
