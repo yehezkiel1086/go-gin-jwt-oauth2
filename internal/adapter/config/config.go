@@ -13,6 +13,7 @@ type (
 		HTTP *HTTP
 		DB   *DB
 		JWT  *JWT
+		OAuth *OAuth
 	}
 
 	App struct {
@@ -32,6 +33,12 @@ type (
 		Pass string
 		Host string
 		Port string
+	}
+
+	OAuth struct {
+		ClientID string
+		ClientSecret string
+		RedirectURL string
 	}
 
 	JWT struct {
@@ -67,6 +74,12 @@ func InitConfig() (*Container, error) {
 		Port: os.Getenv("DB_PORT"),
 	}
 
+	OAuth := &OAuth{
+		ClientID: os.Getenv("GOOGLE_CLIENT_ID"),
+		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
+		RedirectURL: os.Getenv("GOOGLE_REDIRECT_URL"),
+	}
+
 	JWT := &JWT{
 		Secret: os.Getenv("JWT_SECRET"),
 		Duration: os.Getenv("TOKEN_DURATION"),
@@ -76,6 +89,7 @@ func InitConfig() (*Container, error) {
 		App: App,
 		HTTP: HTTP,
 		DB: DB,
+		OAuth: OAuth,
 		JWT: JWT,
 	}, nil
 }
