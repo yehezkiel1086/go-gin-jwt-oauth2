@@ -3,14 +3,12 @@ package handler
 import (
 	"net/http"
 	"os"
-	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/yehezkiel1086/go-gin-jwt-oauth/internal/adapter/config"
 	"github.com/yehezkiel1086/go-gin-jwt-oauth/internal/core/domain"
 	"github.com/yehezkiel1086/go-gin-jwt-oauth/internal/core/port"
+	"github.com/yehezkiel1086/go-gin-jwt-oauth/internal/core/util"
 )
 
 type AuthHandler struct {
@@ -54,29 +52,10 @@ func (ah *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	// handle jwt
-	// convert token duration to int
-	duration, err := strconv.Atoi(ah.jwtConf.Duration)
+	// generate jwt
+	ss, duration, err := util.GenerateJWT(ah.jwtConf, user)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "invalid token duration from .env",
-		})
-		return
-	}
-
-	// Create claims with multiple fields populated
-	claims := domain.JWT{
-		Email: user.Email,
-		Role: user.Role,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(duration) * time.Minute)),
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	ss, err := token.SignedString([]byte(ah.jwtConf.Secret))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -89,6 +68,31 @@ func (ah *AuthHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "user logged in successfully",
 	})
+}
+
+func (ah *AuthHandler) GoogleLogin(c *gin.Context) {
+	url := ah.svc.GetGoogleLoginURL(c)
+	c.Redirect(http.StatusTemporaryRedirect, url)
+}
+
+func (ah *AuthHandler) GoogleCallback(c *gin.Context) {
+	code := c.Query("code")
+	if code == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing code"})
+		return
+	}
+
+	ss, duration, err := ah.svc.GoogleCallback(c, code)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// set cookie
+	c.SetCookie("jwt_token", ss, duration * 60, "/", ah.httpConf.Host, os.Getenv("APP_ENV") == "production", true)
+
+	redirect := os.Getenv("GOOGLE_CLIENT_REDIRECT_URL")
+	c.Redirect(http.StatusTemporaryRedirect, redirect)
 }
 
 func (ah *AuthHandler) Logout(c *gin.Context) {

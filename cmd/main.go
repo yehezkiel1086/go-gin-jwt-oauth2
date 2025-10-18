@@ -10,6 +10,8 @@ import (
 	"github.com/yehezkiel1086/go-gin-jwt-oauth/internal/adapter/storage/postgres/repository"
 	"github.com/yehezkiel1086/go-gin-jwt-oauth/internal/core/domain"
 	"github.com/yehezkiel1086/go-gin-jwt-oauth/internal/core/service"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 func main() {
@@ -40,7 +42,16 @@ func main() {
 	userSvc := service.InitUserService(userRepo)
 	userHandler := handler.InitUserHandler(userSvc)
 
-	authSvc := service.InitAuthService(userRepo)
+	authSvc := service.InitAuthService(userRepo, &oauth2.Config{
+		ClientID:     conf.OAuth.ClientID,
+		ClientSecret: conf.OAuth.ClientSecret,
+		RedirectURL:  conf.OAuth.RedirectURL,
+		Scopes: []string{
+			"https://www.googleapis.com/auth/userinfo.email",
+			"https://www.googleapis.com/auth/userinfo.profile",
+		},
+		Endpoint: google.Endpoint,
+	}, conf.JWT)
 	authHandler := handler.InitAuthHandler(authSvc, conf.JWT, conf.HTTP)
 
 	empRepo := repository.InitEmployeeRepository(db)

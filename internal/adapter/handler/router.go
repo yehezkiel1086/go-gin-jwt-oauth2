@@ -37,11 +37,15 @@ func InitRouter(
 	ad := pb.Group("/admin").Use(AuthMiddleware(), RoleMiddleware(domain.AdminRole))
 
 	// auth routes
-	// public
+	// jwt auth (public)
 	pb.POST("/register", userHandler.Register)
 	pb.POST("/login", authHandler.Login)
 
-	// user
+	// google oauth (public)
+	pb.GET("/login/google", authHandler.GoogleLogin)
+	pb.GET("/login/google/callback", authHandler.GoogleCallback)
+
+	// auth (public)
 	us.POST("/logout", authHandler.Logout)
 
 	// employee routes
