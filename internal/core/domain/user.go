@@ -15,6 +15,8 @@ type User struct {
 
 	Name string `json:"name" gorm:"size:255;not null"`
 	Email string `json:"email" gorm:"size:255;not null;unique"`
-	Password string `json:"password" gorm:"size:255;not null"`
-	Role Role `json:"role" gorm:"not null;default:2001"`
+	Provider string `json:"provider" gorm:"size:255;not null"`
+	Password string `json:"password" gorm:"size:255"`
+	Role Role `json:"role" gorm:"default:2001"`
+	Picture string `json:"picture" gorm:"size:255"`
 }
