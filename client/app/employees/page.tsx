@@ -40,10 +40,10 @@ const EmployeesPage = () => {
       <div className="mt-4 flex flex-col gap-4">
         {loading ? (
           <p>Loading employees...</p>
-        ) : employees.length === 0 ? (
+        ) : employees?.length === 0 ? (
           <p>No employees found.</p>
         ) : (
-          employees.map((emp, i) => (
+          employees?.map((emp, i) => (
             <div key={i}>
               <Link
                 href={`/employees/${emp.id}`}

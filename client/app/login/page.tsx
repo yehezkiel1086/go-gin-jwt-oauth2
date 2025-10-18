@@ -10,6 +10,10 @@ const LoginPage = () => {
 
   const [state, action, pending] = useActionState(signin, undefined);
 
+  const handleGoogleLogin = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URI}/api/v1/login/google`;
+  };
+
   return (
     <>
       <h1 className="text-2xl font-semibold">Login</h1>
@@ -48,7 +52,11 @@ const LoginPage = () => {
           >
             {pending ? "Signing in..." : "Signin"}
           </button>
-          <button className="border-blue-600 border-2 rounded-sm py-1 hover:bg-white hover:text-black transition duration-200">
+          <button
+            onClick={handleGoogleLogin}
+            type="button"
+            className="border-blue-600 border-2 rounded-sm py-1 hover:bg-white hover:text-black transition duration-200"
+          >
             <FcGoogle className="inline-block text-lg mb-[3px]" /> Signin with
             Google
           </button>
