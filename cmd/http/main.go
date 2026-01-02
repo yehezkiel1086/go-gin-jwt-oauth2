@@ -1,0 +1,51 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/yehezkiel1086/go-gin-nextjs-auth/internal/adapter/config"
+	"github.com/yehezkiel1086/go-gin-nextjs-auth/internal/adapter/handler"
+	"github.com/yehezkiel1086/go-gin-nextjs-auth/internal/adapter/storage/postgres"
+	"github.com/yehezkiel1086/go-gin-nextjs-auth/internal/adapter/storage/postgres/repository"
+	"github.com/yehezkiel1086/go-gin-nextjs-auth/internal/core/domain"
+	"github.com/yehezkiel1086/go-gin-nextjs-auth/internal/core/service"
+)
+
+func main() {
+	// load .env configs
+	conf, err := config.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("✅ .env configs loaded successfully")
+
+	// init db connection
+	db, err := postgres.New(context.Background(), conf.DB)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("✅ DB connection established successfully")
+
+	// migrate dbs
+	if err := db.Migrate(&domain.User{}); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("✅ DB migrated successfully")
+
+	// dependency injections
+	userRepo := repository.NewUserRepository(db)
+	userSvc := service.NewUserService(userRepo)
+	userHandler := handler.NewUserHandler(userSvc)
+
+	// init router
+	r := handler.NewRouter(
+		userHandler,
+	)
+
+	// start server
+	if err := r.Serve(conf.HTTP); err != nil {
+		panic(err)
+	}
+}
