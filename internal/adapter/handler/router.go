@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/yehezkiel1086/go-gin-nextjs-auth/internal/adapter/config"
+	"github.com/yehezkiel1086/go-gin-nextjs-auth/internal/core/domain"
 )
 
 type Router struct {
@@ -11,17 +12,21 @@ type Router struct {
 
 func NewRouter(
 	userHandler *UserHandler,
+	authHandler *AuthHandler,
 ) (*Router) {
 	r := gin.New()
 
 	// group routes
 	pb := r.Group("/api/v1")
+	// us := pb.Group("/", AuthMiddleware(), RoleMiddleware(domain.UserRole, domain.AdminRole))
+	ad := pb.Group("/", AuthMiddleware(), RoleMiddleware(domain.AdminRole))
 
-	// public user routes
+	// public user and auth routes
+	pb.POST("/login", authHandler.Login)
 	pb.POST("/register", userHandler.RegisterUser)
 
 	// admin user routes
-	pb.GET("/users", userHandler.GetUsers)
+	ad.GET("/users", userHandler.GetUsers)
 
 	return &Router{r}
 }
