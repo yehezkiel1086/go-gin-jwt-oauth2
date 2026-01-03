@@ -18,7 +18,7 @@ func NewUserService(repo port.UserRepository) (*UserService) {
 	}
 }
 
-func (us *UserService) RegisterUser(ctx context.Context, user *domain.User) (*domain.User, error) {
+func (us *UserService) RegisterUser(ctx context.Context, user *domain.User) (*domain.UserResponse, error) {
 	hashedPwd, err := util.HashPassword(user.Password)
 	if err != nil {
 		return nil, err
@@ -29,6 +29,6 @@ func (us *UserService) RegisterUser(ctx context.Context, user *domain.User) (*do
 	return us.repo.CreateUser(ctx, user)
 }
 
-func (us *UserService) GetUsers(ctx context.Context) ([]domain.User, error) {
+func (us *UserService) GetUsers(ctx context.Context) ([]domain.UserResponse, error) {
 	return us.repo.GetUsers(ctx)
 }

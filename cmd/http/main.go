@@ -21,8 +21,11 @@ func main() {
 	}
 	fmt.Println("✅ .env configs loaded successfully")
 
+	// init context
+	ctx := context.Background()
+
 	// init db connection
-	db, err := postgres.New(context.Background(), conf.DB)
+	db, err := postgres.New(ctx, conf.DB)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -50,6 +53,6 @@ func main() {
 
 	// start server
 	if err := r.Serve(conf.HTTP); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }

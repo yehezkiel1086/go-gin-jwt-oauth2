@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -18,16 +19,10 @@ func NewUserHandler(svc port.UserService) *UserHandler {
 	}
 }
 
-type RegisterUserReq struct {
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required,min=8"`
-	Name     string `json:"name" binding:"required"`
-}
-
 func (uh *UserHandler) RegisterUser(c *gin.Context) {
-	var req RegisterUserReq
+	var req domain.UserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": errors.New("email, password and name are required")})
 		return
 	}
 
@@ -51,7 +46,7 @@ func (uh *UserHandler) GetUsers(c *gin.Context) {
 	users, err := uh.svc.GetUsers(c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"error": err.Error(),
+			"error": domain.ErrNotFound,
 		})
 		return
 	}

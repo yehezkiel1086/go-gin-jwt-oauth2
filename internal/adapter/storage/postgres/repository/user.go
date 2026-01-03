@@ -17,13 +17,17 @@ func NewUserRepository(db *postgres.DB) *UserRepository {
 	}
 }
 
-func (ur *UserRepository) CreateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
+func (ur *UserRepository) CreateUser(ctx context.Context, user *domain.User) (*domain.UserResponse, error) {
 	db := ur.db.GetDB()
 	if err := db.Create(user).Error; err != nil {
 		return nil, err
 	}
 
-	return user, nil
+	return &domain.UserResponse{
+		Name: user.Name,
+		Email: user.Email,
+		Role: user.Role,
+	}, nil
 }
 
 func (ur *UserRepository) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
@@ -37,11 +41,11 @@ func (ur *UserRepository) GetUserByEmail(ctx context.Context, email string) (*do
 	return user, nil
 }
 
-func (ur *UserRepository) GetUsers(ctx context.Context) ([]domain.User, error) {
+func (ur *UserRepository) GetUsers(ctx context.Context) ([]domain.UserResponse, error) {
 	db := ur.db.GetDB()
 
-	var users []domain.User
-	if err := db.Find(&users).Error; err != nil {
+	var users []domain.UserResponse
+	if err := db.Model(&domain.User{}).Find(&users).Error; err != nil {
 		return nil, err
 	}
 

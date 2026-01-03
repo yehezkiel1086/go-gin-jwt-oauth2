@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -43,7 +44,8 @@ func New() (*Container, error) {
 	if os.Getenv("APP_ENV") != "production" {
 		err := godotenv.Load()
 		if err != nil {
-			return nil, err
+			errMsg := fmt.Errorf("unable to load .env: %v", err.Error())
+			return nil, errMsg
 		}
 	}
 

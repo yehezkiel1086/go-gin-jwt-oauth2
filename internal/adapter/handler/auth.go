@@ -1,11 +1,13 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/yehezkiel1086/go-gin-nextjs-auth/internal/adapter/config"
+	"github.com/yehezkiel1086/go-gin-nextjs-auth/internal/core/domain"
 	"github.com/yehezkiel1086/go-gin-nextjs-auth/internal/core/port"
 )
 
@@ -29,13 +31,13 @@ type LoginUserReq struct {
 func (ah *AuthHandler) Login(c *gin.Context) {
 	var req LoginUserReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": errors.New("email and password are required")})
 		return
 	}
 
 	token, err := ah.svc.Login(c, req.Email, req.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": domain.ErrUnauthorized})
 		return
 	}
 
@@ -43,7 +45,7 @@ func (ah *AuthHandler) Login(c *gin.Context) {
 	duration, err := strconv.Atoi(ah.conf.Duration)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
+			"error": domain.ErrInternal,
 		})
 		return
 	}
