@@ -13,12 +13,13 @@ type Router struct {
 func NewRouter(
 	userHandler *UserHandler,
 	authHandler *AuthHandler,
+	jobHandler *JobHandler,
 ) (*Router) {
 	r := gin.New()
 
 	// group routes
 	pb := r.Group("/api/v1")
-	// us := pb.Group("/", AuthMiddleware(), RoleMiddleware(domain.UserRole, domain.AdminRole))
+	us := pb.Group("/", AuthMiddleware(), RoleMiddleware(domain.UserRole, domain.AdminRole))
 	ad := pb.Group("/", AuthMiddleware(), RoleMiddleware(domain.AdminRole))
 
 	// public user and auth routes
@@ -27,6 +28,14 @@ func NewRouter(
 
 	// admin user routes
 	ad.GET("/users", userHandler.GetUsers)
+
+	// user job routes
+	us.GET("/jobs", jobHandler.GetJobs)
+	us.GET("/jobs/:id", jobHandler.GetJobById)
+
+	// admin job routes
+	ad.POST("/jobs", jobHandler.CreateJob)
+	ad.DELETE("/jobs/:id", jobHandler.DeleteJob)
 
 	return &Router{r}
 }
