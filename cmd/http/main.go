@@ -51,6 +51,7 @@ func main() {
 
 	// init router
 	r := handler.NewRouter(
+		conf.HTTP,
 		userHandler,
 		authHandler,
 		jobHandler,

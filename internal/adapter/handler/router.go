@@ -1,6 +1,10 @@
 package handler
 
 import (
+	"net/http"
+	"strings"
+
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/yehezkiel1086/go-gin-nextjs-auth/internal/adapter/config"
 	"github.com/yehezkiel1086/go-gin-nextjs-auth/internal/core/domain"
@@ -11,11 +15,26 @@ type Router struct {
 }
 
 func NewRouter(
+	conf *config.HTTP,
 	userHandler *UserHandler,
 	authHandler *AuthHandler,
 	jobHandler *JobHandler,
 ) (*Router) {
+	// init router
 	r := gin.New()
+
+	// define allowed origins array of string
+	allowedOrigins := strings.Split(conf.AllowedOrigins, ",")
+
+	// cors config
+	corsConf := cors.New(cors.Config{
+    AllowOrigins:   allowedOrigins,
+    AllowMethods:   []string{http.MethodGet, http.MethodPost, http.MethodDelete, http.MethodPut, http.MethodOptions},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+    AllowCredentials: true,
+	})
+	r.Use(corsConf)
 
 	// group routes
 	pb := r.Group("/api/v1")
